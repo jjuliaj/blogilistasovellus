@@ -14,7 +14,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [message, setMessage] = useState(null)
   const [messageType, setMessageType] = useState('')
 
   useEffect(() => {
@@ -49,17 +49,17 @@ const App = () => {
       setBlogs(blogs.concat(returnedBlog));
       setNewBlog({ title: '', author: '', url: '' });
 
-      setErrorMessage(`A new blog "${newBlog.title}" by ${newBlog.author} was added`)
+      setMessage(`A new blog "${newBlog.title}" by ${newBlog.author} was added`)
       setMessageType('success')
       setTimeout(() => {
-        setErrorMessage(null)
+        setMessage(null)
       }, 3000)
 
     } catch (exception) {
-      setErrorMessage('Adding blog did not succeed.')
+      setMessage('Adding blog did not succeed.')
       setMessageType('error')
       setTimeout(() => {
-        setErrorMessage(null)
+        setMessage(null)
       }, 3000)
     }
   }
@@ -98,16 +98,16 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      setErrorMessage('Login successful!')
+      setMessage('Login successful!')
       setMessageType('success')
       setTimeout(() => {
-        setErrorMessage(null)
+        setMessage(null)
       }, 3000)
     } catch (exception) {
-      setErrorMessage('wrong credentials')
+      setMessage('wrong credentials')
       setMessageType('error')
       setTimeout(() => {
-        setErrorMessage(null)
+        setMessage(null)
       }, 3000)
     }
   }
@@ -176,7 +176,7 @@ const App = () => {
     <div>
       <h1>Hieno bloki sovellus</h1>
 
-      <Notification message={errorMessage} type={messageType} />
+      <Notification message={message} type={messageType} />
       <h2>Login</h2>
       {!user && loginForm()}
       {user && <div>
