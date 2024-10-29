@@ -6,6 +6,11 @@ import './Style.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
+  const [newBlog, setNewBlog] = useState({
+    title: '',
+    author: '',
+    url: ''
+  });
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -29,6 +34,24 @@ const App = () => {
       })
   }, [])
 
+
+  const addBlog = (event) => {
+    event.preventDefault()
+    const blogObject = {
+      title: newBlog.title,
+      author: newBlog.author,
+      url: newBlog.url,
+      likes: 0
+    }
+
+    blogService
+      .create(blogObject)
+      .then(returnedBlog => {
+        setBlogs(blogs.concat(returnedBlog))
+        setNewBlog({ title: '', author: '', url: '' });
+      })
+  }
+
   const buttonHandler = (blogiid) => {
     blogService.remove(blogiid)
     blogService.getAll()
@@ -40,6 +63,11 @@ const App = () => {
   const logout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
+  }
+
+  const handleBlogChange = (event) => {
+    const { name, value } = event.target;
+    setNewBlog({ ...newBlog, [name]: value });
   }
 
   const handleLogin = async (event) => {
@@ -73,11 +101,39 @@ const App = () => {
   }
 
   const blogForm = () => (
-    <ul>
-      {blogs.map(blog =>
-        <li key={blog.id}> Blogin otsikko: {blog.title}, Blogin tekijä: {blog.author}, Blogin osoite: {blog.url}, Tykkäyksiä: {blog.likes} <button type="button" onClick={() => buttonHandler(blog.id)}>Poisa</button></li>
-      )}
-    </ul>
+    <div>
+      <h2>create new blog:</h2>
+      <form onSubmit={addBlog}>
+        title:
+        <input
+          name="title"
+          value={newBlog.title}
+          onChange={handleBlogChange}
+        />
+        <br />
+        author:
+        <input
+          name="author"
+          value={newBlog.author}
+          onChange={handleBlogChange}
+        />
+        <br />
+        url:
+        <input
+          name="url"
+          value={newBlog.url}
+          onChange={handleBlogChange}
+        />
+        <br />
+        <button type="submit">save</button>
+      </form>
+      <ul>
+        {blogs.map(blog =>
+          <li key={blog.id}> Blogin otsikko: {blog.title}, Blogin tekijä: {blog.author}, Blogin osoite: {blog.url}, Tykkäyksiä: {blog.likes} <button type="button" onClick={() => buttonHandler(blog.id)}>Poisa</button></li>
+        )}
+      </ul>
+    </div>
+
   )
 
   const loginForm = () => (
