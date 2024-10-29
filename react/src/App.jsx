@@ -35,7 +35,7 @@ const App = () => {
   }, [])
 
 
-  const addBlog = (event) => {
+  const addBlog = async (event) => {
     event.preventDefault()
     const blogObject = {
       title: newBlog.title,
@@ -44,12 +44,24 @@ const App = () => {
       likes: 0
     }
 
-    blogService
-      .create(blogObject)
-      .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        setNewBlog({ title: '', author: '', url: '' });
-      })
+    try {
+      const returnedBlog = await blogService.create(blogObject);
+      setBlogs(blogs.concat(returnedBlog));
+      setNewBlog({ title: '', author: '', url: '' });
+
+      setErrorMessage(`A new blog "${newBlog.title}" by ${newBlog.author} was added`)
+      setMessageType('success')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 3000)
+
+    } catch (exception) {
+      setErrorMessage('Adding blog did not succeed.')
+      setMessageType('error')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 3000)
+    }
   }
 
   const buttonHandler = (blogiid) => {
