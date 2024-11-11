@@ -3,6 +3,10 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import './Style.css'
+import LoginForm from './components/LoginForm'
+import BlogForm from './components/BlogForm'
+import blogs from './services/blogs'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -16,6 +20,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
   const [messageType, setMessageType] = useState('')
+  const [blogFormVisible, setBlogFormVisible] = useState(false)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -112,79 +117,68 @@ const App = () => {
     }
   }
 
-  const blogForm = () => (
-    <div>
-      <h2>create new blog:</h2>
-      <form onSubmit={addBlog}>
-        title:
-        <input
-          name="title"
-          value={newBlog.title}
-          onChange={handleBlogChange}
-        />
-        <br />
-        author:
-        <input
-          name="author"
-          value={newBlog.author}
-          onChange={handleBlogChange}
-        />
-        <br />
-        url:
-        <input
-          name="url"
-          value={newBlog.url}
-          onChange={handleBlogChange}
-        />
-        <br />
-        <button type="submit">save</button>
-      </form>
-      <ul>
-        {blogs.map(blog =>
-          <li key={blog.id}> Blogin otsikko: {blog.title}, Blogin tekijä: {blog.author}, Blogin osoite: {blog.url}, Tykkäyksiä: {blog.likes} <button type="button" onClick={() => buttonHandler(blog.id)}>Poisa</button></li>
-        )}
-      </ul>
-    </div>
+  const blogForm = () => {
+    const hideWhenVisible = { display: blogFormVisible ? 'none' : '' }
+    const showWhenVisible = { display: blogFormVisible ? '' : 'none' }
 
-  )
-
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
+    return (
       <div>
-        username
-        <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
+        <div style={hideWhenVisible}>
+          <br />
+          <button onClick={() => setBlogFormVisible(true)}>new blog</button>
+        </div>
+        <div style={showWhenVisible}>
+          <BlogForm
+            newBlog={newBlog}
+            handleTitleChange={handleBlogChange}
+            handleAuthorChange={handleBlogChange}
+            handleUrlChange={handleBlogChange}
+            onSubmit={addBlog}
+          />
+          <div>
+          </div>
+          <br />
+          <button onClick={() => setBlogFormVisible(false)}>cancel</button>
+        </div>
+      </div>
+    )
+  }
+
+  const loginForm = () => {
+    return (
+      <div>
+        <LoginForm
+          username={username}
+          password={password}
+          handleUsernameChange={({ target }) => setUsername(target.value)}
+          handlePasswordChange={({ target }) => setPassword(target.value)}
+          handleSubmit={handleLogin}
         />
       </div>
-      <div>
-        password
-        <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>
-  )
+    )
+  }
 
   return (
     <div>
       <h1>Hieno bloki sovellus</h1>
 
       <Notification message={message} type={messageType} />
-      <h2>Login</h2>
+
       {!user && loginForm()}
+
       {user && <div>
         <p>{user.username} logged in</p> <button onClick={logout}>logout</button>
       </div>
       }
 
       {user && blogForm()}
+
+      {user && <ul>
+        {blogs.map(blog =>
+          <li key={blog.id}> Blogin otsikko: {blog.title}, Blogin tekijä: {blog.author}, Blogin osoite: {blog.url}, Tykkäyksiä: {blog.likes} <button type="button" onClick={() => buttonHandler(blog.id)}>Poisa</button></li>
+        )}
+      </ul>}
+
     </div>
   )
 }
