@@ -5,16 +5,10 @@ import Notification from './components/Notification'
 import './Style.css'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
-//import blogs from './services/blogs'
-//import Togglable from './components/Togglable'
+
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newBlog, setNewBlog] = useState({
-    title: '',
-    author: '',
-    url: ''
-  });
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -40,34 +34,24 @@ const App = () => {
   }, [])
 
 
-  const addBlog = async (event) => {
-    event.preventDefault()
-    const blogObject = {
-      title: newBlog.title,
-      author: newBlog.author,
-      url: newBlog.url,
-      likes: 0
-    }
-
-    try {
-      const returnedBlog = await blogService.create(blogObject);
-      setBlogs(blogs.concat(returnedBlog));
-      setNewBlog({ title: '', author: '', url: '' });
-
-      setMessage(`A new blog "${newBlog.title}" by ${newBlog.author} was added`)
-      setBlogFormVisible(false)
-      setMessageType('success')
-      setTimeout(() => {
-        setMessage(null)
-      }, 3000)
-
-    } catch (exception) {
-      setMessage('Adding blog did not succeed.')
-      setMessageType('error')
-      setTimeout(() => {
-        setMessage(null)
-      }, 3000)
-    }
+  const addBlog = (blogObject) => {
+    blogService
+      .create(blogObject)
+      .then(returnedBlog => {
+        setBlogs(blogs.concat(returnedBlog))
+        setMessage(`A new blog "${blogObject.title}" by ${blogObject.author} was added`)
+        setMessageType('success')
+        setTimeout(() => {
+          setMessage(null)
+        }, 3000)
+        setBlogFormVisible(false)
+      }).catch(() => {
+        setMessage('Failed to add blog')
+        setMessageType('error')
+        setTimeout(() => {
+          setMessage(null)
+        }, 3000)
+      })
   }
 
   const buttonHandler = (blogiid) => {
@@ -83,10 +67,19 @@ const App = () => {
     setUser(null)
   }
 
-  const handleBlogChange = (event) => {
-    const { name, value } = event.target;
-    setNewBlog({ ...newBlog, [name]: value });
-  }
+  const blogForm = () => (
+    <div>
+      {!blogFormVisible && (
+        <button onClick={() => setBlogFormVisible(true)}>new blog</button>
+      )}
+      {blogFormVisible && (
+        <BlogForm
+          createBlog={addBlog}
+          toggleVisibility={() => setBlogFormVisible(false)}
+        />
+      )}
+    </div>
+  )
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -116,33 +109,6 @@ const App = () => {
         setMessage(null)
       }, 3000)
     }
-  }
-
-  const blogForm = () => {
-    const hideWhenVisible = { display: blogFormVisible ? 'none' : '' }
-    const showWhenVisible = { display: blogFormVisible ? '' : 'none' }
-
-    return (
-      <div>
-        <div style={hideWhenVisible}>
-          <br />
-          <button onClick={() => setBlogFormVisible(true)}>new blog</button>
-        </div>
-        <div style={showWhenVisible}>
-          <BlogForm
-            newBlog={newBlog}
-            handleTitleChange={handleBlogChange}
-            handleAuthorChange={handleBlogChange}
-            handleUrlChange={handleBlogChange}
-            onSubmit={addBlog}
-          />
-          <div>
-          </div>
-          <br />
-          <button onClick={() => setBlogFormVisible(false)}>cancel</button>
-        </div>
-      </div>
-    )
   }
 
   const loginForm = () => {
