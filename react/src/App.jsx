@@ -5,8 +5,8 @@ import Notification from './components/Notification'
 import './Style.css'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
-import blogs from './services/blogs'
-import Togglable from './components/Togglable'
+//import blogs from './services/blogs'
+//import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -55,6 +55,7 @@ const App = () => {
       setNewBlog({ title: '', author: '', url: '' });
 
       setMessage(`A new blog "${newBlog.title}" by ${newBlog.author} was added`)
+      setBlogFormVisible(false)
       setMessageType('success')
       setTimeout(() => {
         setMessage(null)
