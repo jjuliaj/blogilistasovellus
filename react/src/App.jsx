@@ -5,6 +5,7 @@ import Notification from './components/Notification'
 import './Style.css'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
+import Blog from './components/Blog'
 
 
 const App = () => {
@@ -140,11 +141,9 @@ const App = () => {
 
       {user && blogForm()}
 
-      {user && <ul>
-        {blogs.map(blog =>
-          <li key={blog.id}> Blogin otsikko: {blog.title}, Blogin tekijä: {blog.author}, Blogin osoite: {blog.url}, Tykkäyksiä: {blog.likes} <button type="button" onClick={() => buttonHandler(blog.id)}>Poisa</button></li>
-        )}
-      </ul>}
+      {user && blogs.map(blog =>
+        <Blog key={blog.id} blog={blog} buttonHandler={buttonHandler} />
+      )}
 
     </div>
   )
